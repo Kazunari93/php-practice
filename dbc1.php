@@ -1,6 +1,5 @@
 <?php
 
-
 function dbConnect()
 {
   $dsn = 'dsn'; //my dsn
@@ -12,7 +11,9 @@ function dbConnect()
       $dsn,
       $user,
       $pass,
-      [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+      [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+      ]
     );
   } catch (PDOException $e) {
     echo '失敗' . $e->getMessage();
@@ -34,8 +35,6 @@ function getAllBlog()
   $dbh = null;
 }
 
-$data = getAllBlog();
-
 function setCategory($num)
 {
   if ($num === '1') {
@@ -47,32 +46,23 @@ function setCategory($num)
   }
 }
 
-?>
+function getBlog($id)
+{
+  if (empty($id)) {
+    exit('Not Found');
+  }
 
-<!DOCTYPE html>
-<html lang="ja">
+  $dbh = dbConnect();
+  //プレイスフォルダー
+  $stmt = $dbh->prepare('SELECT * FROM blog WHERE id = :id');
+  $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
+  $stmt->execute();
 
-<body>
-  <table>
-    <tr>
-      <th>No</th>
-      <th>タイトル</th>
-      <th>カテゴリー</th>
-    </tr>
-    <?php foreach ($data as $column) : ?>
-      <tr>
-        <td><?php echo $column['id'] ?></td>
-        <td><?php echo $column['title'] ?></td>
-        <td><?php echo setCategory($column['category']) ?></td>
-      </tr>
-    <?php endforeach; ?>
-  </table>
-</body>
+  $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-</html>
+  if (!$result) {
+    exit('Not Found');
+  }
+  return $result;
+}
