@@ -2,7 +2,8 @@
 
 require_once('dbc.php');
 
-$result = getBlog($_GET['id']);
+$dbc = new Dbc();
+$result = $dbc->getBlog($_GET['id']);
 
 ?>
 
@@ -19,7 +20,7 @@ $result = getBlog($_GET['id']);
   <h2>ブログ詳細</h2>
   <h3>タイトル : <?php echo $result['title'] ?></h3>
   <p>投稿日時 : <?php echo $result['post_at'] ?></p>
-  <p>カテゴリ : <?php echo setCategory($result['category']) ?></p>
+  <p>カテゴリ : <?php echo $dbc->setCategory($result['category']) ?></p>
   <br>
   <p>本文 : <?php echo $result['content'] ?></p>
 </body>

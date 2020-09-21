@@ -2,7 +2,9 @@
 
 require_once('dbc.php');
 
-$data = getAllBlog();
+$dbc = new Dbc();
+
+$data = $dbc->getAllBlog();
 
 ?>
 
@@ -29,7 +31,7 @@ $data = getAllBlog();
       <tr>
         <td><?php echo $column['id'] ?></td>
         <td><?php echo $column['title'] ?></td>
-        <td><?php echo setCategory($column['category']) ?></td>
+        <td><?php echo $dbc->setCategory($column['category']) ?></td>
         <td><a href="/detail.php?id=<?php echo $column['id'] ?>">詳細</a></td>
       </tr>
     <?php endforeach; ?>
