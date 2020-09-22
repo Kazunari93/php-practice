@@ -4,11 +4,13 @@
 
 class Dbc
 {
-  function dbConnect()
+  protected $table_name;
+
+  protected function dbConnect()
   {
     $dsn = 'dsn'; //my dsn
     $user = 'user'; // my user
-    $pass = 'pass'; // my password
+    $pass = 'pass'; // my password 
 
     try {
       $dbh = new PDO(
@@ -27,10 +29,10 @@ class Dbc
     return $dbh;
   }
 
-  function getAllBlog()
+  public function getAll()
   {
     $dbh = $this->dbConnect();
-    $sql = 'SELECT * FROM blog';
+    $sql = "SELECT * FROM $this->table_name";
     //SQL実行
     $stmt = $dbh->query($sql);
     //結果を受け取る
@@ -39,18 +41,9 @@ class Dbc
     $dbh = null;
   }
 
-  function setCategory($num)
-  {
-    if ($num === '1') {
-      return '日常';
-    } elseif ($num === '2') {
-      return '趣味';
-    } else {
-      return 'その他';
-    }
-  }
 
-  function getBlog($id)
+
+  public function getById($id)
   {
     if (empty($id)) {
       exit('Not Found');
@@ -58,7 +51,7 @@ class Dbc
 
     $dbh = $this->dbConnect();
     //プレイスフォルダー
-    $stmt = $dbh->prepare('SELECT * FROM blog WHERE id = :id');
+    $stmt = $dbh->prepare("SELECT * FROM $this->table_name WHERE id = :id");
     $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
 
     $stmt->execute();
@@ -69,27 +62,5 @@ class Dbc
       exit('Not Found');
     }
     return $result;
-  }
-
-  function blogCreate($blogs)
-  {
-    $sql = 'INSERT INTO blog(title, content, category, publish_status)
-        VALUES (:title, :content, :category, :publish_status)';
-
-    $dbh = $this->dbConnect();
-    $dbh->beginTransaction();
-    try {
-      $stmt = $dbh->prepare($sql);
-      $stmt->bindValue(':title', $blogs['title'], PDO::PARAM_STR);
-      $stmt->bindValue(':content', $blogs['content'], PDO::PARAM_STR);
-      $stmt->bindValue(':category', $blogs['category'], PDO::PARAM_INT);
-      $stmt->bindValue(':publish_status', $blogs['publish_status'], PDO::PARAM_INT);
-      $stmt->execute();
-      $dbh->commit();
-      echo '投稿完了';
-    } catch (PDOException $e) {
-      $dbh->rollBack();
-      exit($e);
-    }
   }
 }
