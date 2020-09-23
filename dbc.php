@@ -1,6 +1,6 @@
-
-
 <?php
+
+require_once('env.php');
 
 class Dbc
 {
@@ -8,9 +8,11 @@ class Dbc
 
   protected function dbConnect()
   {
-    $dsn = 'dsn'; //my dsn
-    $user = 'user'; // my user
-    $pass = 'pass'; // my password 
+    $host = DB_HOST;
+    $dbname = DB_NAME;
+    $user = DB_USER;
+    $pass = DB_PASS;
+    $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8;";
 
     try {
       $dbh = new PDO(
@@ -62,5 +64,20 @@ class Dbc
       exit('Not Found');
     }
     return $result;
+  }
+
+  public function delete($id)
+  {
+    if (empty($id)) {
+      exit('Not Found');
+    }
+
+    $dbh = $this->dbConnect();
+    //プレイスフォルダー
+    $stmt = $dbh->prepare("DELETE FROM $this->table_name WHERE id = :id");
+    $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
+
+    $stmt->execute();
+    echo '削除しました';
   }
 }
