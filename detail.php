@@ -2,7 +2,7 @@
 
 require_once('blog.php');
 
-$dbc = new Blog();
+$blog = new Blog();
 $result = $blog->getById($_GET['id']);
 
 ?>
